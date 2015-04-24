@@ -33,8 +33,9 @@ module Elasticity
     def submit(ruby_params)
       aws_params = AwsSession.convert_ruby_to_aws(ruby_params)
       signed_params = sign_params(aws_params)
+      aws_request = AwsRequest.new(self)
       begin
-        RestClient.post("#@protocol://#@host", signed_params, :content_type => 'application/x-www-form-urlencoded; charset=utf-8')
+        RestClient.post(aws_request.url, signed_params, aws_request.headers)
       rescue RestClient::BadRequest => e
         raise ArgumentError, AwsSession.parse_error_response(e.http_body)
       end

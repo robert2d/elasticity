@@ -150,10 +150,7 @@ describe Elasticity::AwsSession do
   describe '#submit' do
 
     let(:request) do
-      Elasticity::AwsSession.new('_', '_').tap do |r|
-        r.instance_variable_set(:@host, 'HOSTNAME')
-        r.instance_variable_set(:@protocol, 'PROTOCOL')
-      end
+      Elasticity::AwsSession.new('_', '_', :region => '#SUBMIT_REGION', :secure => true)
     end
 
     it 'should POST a properly assembled request' do
@@ -161,7 +158,7 @@ describe Elasticity::AwsSession do
       aws_params = {}
       Elasticity::AwsSession.should_receive(:convert_ruby_to_aws).with(ruby_params).and_return(ruby_params)
       request.should_receive(:sign_params).with(aws_params).and_return('SIGNED_PARAMS')
-      RestClient.should_receive(:post).with('PROTOCOL://HOSTNAME', 'SIGNED_PARAMS', :content_type => 'application/x-www-form-urlencoded; charset=utf-8')
+      RestClient.should_receive(:post).with('https://elasticmapreduce.#SUBMIT_REGION.amazonaws.com', 'SIGNED_PARAMS', :content_type => 'application/x-www-form-urlencoded; charset=utf-8')
       request.submit(ruby_params)
     end
 
