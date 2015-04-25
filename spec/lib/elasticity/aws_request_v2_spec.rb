@@ -1,4 +1,4 @@
-describe Elasticity::AwsRequest do
+describe Elasticity::AwsRequestV2 do
 
   before do
     Timecop.freeze(Time.at(1302461096))
@@ -9,7 +9,7 @@ describe Elasticity::AwsRequest do
   end
 
   subject do
-    Elasticity::AwsRequest.new(
+    Elasticity::AwsRequestV2.new(
       Elasticity::AwsSession.new('access', 'secret'),
       {:operation => 'RunJobFlow', :name => 'Elasticity Job Flow'}
     )
@@ -32,7 +32,6 @@ describe Elasticity::AwsRequest do
   describe '#payload' do
     it 'should payload up the place' do
       subject.payload.should == 'AWSAccessKeyId=access&Name=Elasticity%20Job%20Flow&Operation=RunJobFlow&SignatureMethod=HmacSHA256&SignatureVersion=2&Timestamp=2011-04-10T18%3A44%3A56.000Z&Signature=5x6YilYHOjgM%2F6nalIOf62txOKoLFGBYyIivoHb%2F27k%3D'
-      # subject.payload.should == 'AWSAccessKeyId=access&SignatureMethod=HmacSHA256&SignatureVersion=2&Timestamp=2011-04-10T18%3A44%3A56.000Z&Signature=t%2BccC38VxCKyk2ROTKo9vnECsntKoU0RBAFklHWP5bE%3D'
     end
   end
 
@@ -78,7 +77,7 @@ describe Elasticity::AwsRequest do
         'Steps.member.2.HadoopJarStep.Args.member.2' => 'arg5',
         'Steps.member.2.HadoopJarStep.Args.member.3' => 'arg6'
       }
-      Elasticity::AwsRequest.send(:convert_ruby_to_aws, add_jobflow_steps_params).should == expected_result
+      Elasticity::AwsRequestV2.send(:convert_ruby_to_aws, add_jobflow_steps_params).should == expected_result
     end
   end
 

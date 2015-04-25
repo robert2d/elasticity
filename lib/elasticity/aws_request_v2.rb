@@ -1,6 +1,6 @@
 module Elasticity
 
-  class AwsRequest
+  class AwsRequestV2
 
     def initialize(aws_session, ruby_service_hash)
       @aws_session = aws_session
@@ -28,7 +28,7 @@ module Elasticity
     # See: http://docs.amazonwebservices.com/AmazonSimpleDB/2007-11-07/DeveloperGuide/index.html?REST_RESTAuth.html
     #      http://developer.amazonwebservices.com/connect/entry.jspa?externalID=1928
     def payload_v2(service_hash)
-      service_hash = AwsRequest.convert_ruby_to_aws(service_hash)
+      service_hash = AwsRequestV2.convert_ruby_to_aws(service_hash)
       service_hash.merge!({
           'AWSAccessKeyId' => @aws_session.access_key,
           'Timestamp' => Time.now.utc.strftime('%Y-%m-%dT%H:%M:%S.000Z'),
@@ -36,10 +36,10 @@ module Elasticity
           'SignatureMethod' => 'HmacSHA256'
         })
       canonical_string = service_hash.keys.sort.map do |key|
-        "#{AwsRequest.aws_escape(key)}=#{AwsRequest.aws_escape(service_hash[key])}"
+        "#{AwsRequestV2.aws_escape(key)}=#{AwsRequestV2.aws_escape(service_hash[key])}"
       end.join('&')
       string_to_sign = "POST\n#{@aws_session.host.downcase}\n/\n#{canonical_string}"
-      signature = AwsRequest.aws_escape(Base64.encode64(OpenSSL::HMAC.digest('sha256', @aws_session.secret_key, string_to_sign)).strip)
+      signature = AwsRequestV2.aws_escape(Base64.encode64(OpenSSL::HMAC.digest('sha256', @aws_session.secret_key, string_to_sign)).strip)
       "#{canonical_string}&Signature=#{signature}"
     end
 

@@ -31,7 +31,7 @@ module Elasticity
     end
 
     def submit(ruby_service_hash)
-      aws_request = AwsRequest.new(self, ruby_service_hash)
+      aws_request = AwsRequestV2.new(self, ruby_service_hash)
       begin
         RestClient.post(aws_request.url, aws_request.payload, aws_request.headers)
       rescue RestClient::BadRequest => e
